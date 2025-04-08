@@ -1,33 +1,42 @@
-﻿
-const formRegister = document.getElementById('formRegister');
-console.log("form", formRegister);
+﻿const formRegister = document.getElementById('formRegister');
+const emailInput = document.getElementById('email');
+const emailError = document.getElementById('emailError');
+
 formRegister.onsubmit = (e) => {
     e.preventDefault();
-    console.log("Submit form", e);
-    let id = generateUUID();
-    if (crypto) {
-        if (crypto.randomUUID)
-            id = crypto.randomUUID();
+
+    const oldItems = JSON.parse(localStorage.users ?? "[]");
+    const enteredEmail = emailInput.value.trim().toLowerCase();
+
+    const emailExists = oldItems.some(user => user.email.toLowerCase() === enteredEmail);
+
+    if (emailExists) {
+        emailError.classList.remove('hidden');
+        emailInput.classList.add('border-red-500');
+        return;
+    } else {
+        emailError.classList.add('hidden');
+        emailInput.classList.remove('border-red-500');
     }
+
+    let id = generateUUID();
+    if (crypto && crypto.randomUUID) {
+        id = crypto.randomUUID();
+    }
+
     const formData = {
         name: document.getElementById('name').value,
         surname: document.getElementById('surname').value,
-        email: document.getElementById('email').value,
+        email: enteredEmail,
         password: document.getElementById('password').value,
         avatar: document.getElementById('avatar').src,
         guid: id
     };
-    const oldItems = JSON.parse(localStorage.users ?? "[]");
-    console.log("Old list", oldItems);
 
-    let items = [...oldItems, formData];
-    let json = JSON.stringify(items);
+    const items = [...oldItems, formData];
+    const json = JSON.stringify(items);
 
     localStorage.setItem("users", json);
-    console.log("json", json);
-    let users = localStorage.getItem("users");
-    console.log("json", users);
-
     location.href = "/html/users.html";
 }
 

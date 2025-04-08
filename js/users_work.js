@@ -70,9 +70,25 @@ function UserEdit(userCard, user) {
     })
 
     const saveForm = document.getElementById('saveForm');
+
     saveForm.addEventListener('submit', (e) => {
         e.preventDefault();
         users = JSON.parse(localStorage.users);
+
+        const newEmail = emailEdit.value.trim().toLowerCase();
+
+        // Перевіряємо, чи існує email у іншого користувача
+        const emailExists = users.some(u => u.email.toLowerCase() === newEmail && u.guid !== userInUse.guid);
+
+        if (emailExists) {
+            emailError.classList.remove('hidden');
+            emailEdit.classList.add('border-red-500');
+            return;
+        } else {
+            emailError.classList.add('hidden');
+            emailEdit.classList.remove('border-red-500');
+        }
+
         users.forEach(parsedUser => {
             if (parsedUser.guid == userInUse.guid) {
 
